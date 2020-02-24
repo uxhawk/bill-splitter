@@ -57,7 +57,7 @@ function clearInputs() {
 }
 
 function showPlayerCard() {
-    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3" style="max-width: 18rem;"> <div class="card-header card-header d-flex justify-content-between align-items-center">  </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div></div></div>`;
+    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header card-header d-flex justify-content-between align-items-center">  </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div></div></div>`;
     document.body.insertAdjacentHTML("beforeend", cardBlock);
 
     setCardDetails();
