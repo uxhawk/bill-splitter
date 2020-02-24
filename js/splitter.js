@@ -3,6 +3,7 @@ var payerContributionEl = document.getElementById("payerContribution");
 var bodyEl = document.getElementsByTagName("body")[0];
 var containerEl = bodyEl.firstElementChild;
 var payerName, payerContribution;
+var totalCosts = 0;
 var numPayers = 0;
 var payerList = new Map();
 var addPayerBtn = document.getElementById("add-payer-btn");
@@ -120,3 +121,22 @@ class BillPayer {
         this.amountOwed = amountOwed;
     }
 }
+
+//function to calculate the total expenditures
+function calcTotalCosts() {
+    for (let [key] of payerList.entries()) {
+        // totalCosts = totalCosts;
+        let x = payerList.get(key);
+        let curPaid = x.amountPaid;
+        totalCosts += curPaid;
+    }
+    return totalCosts;
+}
+
+// calcTotalCosts();
+
+
+
+
+
+//update the total expenditures if any value is edites
