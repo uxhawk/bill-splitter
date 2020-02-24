@@ -1,11 +1,13 @@
 var payerNameEl = document.getElementById("payerName");
 var payerContributionEl = document.getElementById("payerContribution");
 var bodyEl = document.getElementsByTagName("body")[0];
+var containerEl = bodyEl.firstElementChild;
 var payerName, payerContribution;
 var numPayers = 0;
 var payerList = new Map();
 var addPayerBtn = document.getElementById("add-payer-btn");
 var targetPayer = 0;
+var payerCards = document.getElementsByClassName("payer-cards");
 
 
 //event listeners
@@ -45,8 +47,10 @@ function addPayer(event) {
         let payer = new BillPayer(payerName, payerContribution, 0);
         payerList.set(numPayers, payer);
         //console.log(payerList);
+
         showPlayerCard();
         clearInputs();
+
         numPayers++;
     }
 }
@@ -57,8 +61,22 @@ function clearInputs() {
 }
 
 function showPlayerCard() {
-    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header card-header d-flex justify-content-between align-items-center">  </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div></div></div>`;
-    document.body.insertAdjacentHTML("beforeend", cardBlock);
+    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header d-flex justify-content-between align-items-center">  </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div></div></div>`;
+    // document.body.insertAdjacentHTML("beforeend", cardBlock);
+
+    var row = `<div class="row payer-cards"> </div>`;
+    if (numPayers === 0) {
+        payerCards[0].insertAdjacentHTML("beforeend", cardBlock);
+    } else if (numPayers % 3 === 0) {
+        payerCards[payerCards.length - 1].insertAdjacentHTML("afterend", row);
+        payerCards[payerCards.length - 1].insertAdjacentHTML("beforeend", cardBlock);
+    } else {
+        payerCards[payerCards.length - 1].insertAdjacentHTML("beforeend", cardBlock);
+    }
+
+    // } else {
+    //     console.log("not a factor of three");
+    // }
 
     setCardDetails();
 
@@ -68,7 +86,7 @@ function showPlayerCard() {
 function setCardDetails() {
     let curPayer = payerList.get(numPayers);
     let curName = curPayer.name;
-    let curCard = document.body.lastElementChild;
+    let curCard = document.getElementById(`card-${numPayers}`);
     curCard.getElementsByClassName("card-header")[0].innerHTML = `<span id="header-${numPayers}">${curName}</span><button id="${numPayers}" type="button" class="btn btn-secondary modal-button" data-toggle="modal" data-target="#edit-contributor-modal">Edit</button>`;
     curCard.getElementsByClassName("card-title")[0].innerHTML = " Contributed:";
     curCard.getElementsByClassName("card-text")[0].innerHTML = "$" + `<span id=>${payerContribution}</span>`;
