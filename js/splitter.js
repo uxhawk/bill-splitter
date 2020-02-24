@@ -31,6 +31,7 @@ function editValues(event) {
     let edit = payerList.get(targetPayer);
     edit.name = document.getElementById("editPayerName").value;
     edit.amountPaid = document.getElementById("editPayerContribution").value;
+    calcTotalCosts()
 
     //target the spans to edit card details
     document.getElementById(`header-${targetPayer}`).innerHTML = edit.name;
@@ -47,8 +48,8 @@ function addPayer(event) {
     } else {
         let payer = new BillPayer(payerName, payerContribution, 0);
         payerList.set(numPayers, payer);
-        //console.log(payerList);
 
+        calcTotalCosts()
         showPlayerCard();
         clearInputs();
 
@@ -124,16 +125,18 @@ class BillPayer {
 
 //function to calculate the total expenditures
 function calcTotalCosts() {
+    totalCosts = 0;
     for (let [key] of payerList.entries()) {
-        // totalCosts = totalCosts;
+
         let x = payerList.get(key);
         let curPaid = x.amountPaid;
         totalCosts += curPaid;
     }
+    console.log(totalCosts);
     return totalCosts;
 }
 
-// calcTotalCosts();
+
 
 
 
