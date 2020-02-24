@@ -12,27 +12,6 @@
 </head>
 
 <body>
-    <!-- <div class="container">
-        <h1>Split The Bill</h1>
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <form>
-                    <div class="form-group">
-                        <label for="inputCheck">Amount on Check</label>
-                        <input type="number" class="form-control" id="inputCheck">
-                    </div>
-                    <div class="form-group">
-                        <label for="tipPercentInput">Tip Percentage</label>
-                        <input type="number" class="form-control" id="tipPercentInput">
-                    </div>
-
-                    <button id="calc-tip-btn" type="submit" class="btn btn-primary">Calculate</button>
-                </form>
-            </div>
-        </div>
-
-    </div> -->
-
     <div class="container">
 
         <div class="row">
@@ -50,18 +29,42 @@
                 </form>
             </div>
         </div>
-        <!-- <div class="row">
-            <div class=" mt-5 col-md-4">
-                <div class="card bg-light mb-3" style="max-width: 18rem;">
-                    <div class="card-header">Header</div>
-                    <div class="card-body">
-                        <h5 class="card-title">Light card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of
-                            the card's content.</p>
+
+
+        <!-------modal window------->
+        <div id="edit-contributor-modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Contributor Details </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div id="edit-contributor-form" class="form-group">
+                                <label for="editPayerName">Name</label>
+                                <input type="text" class="form-control" id="editPayerName">
+                            </div>
+                            <div class="form-group">
+                                <label for="editPayerContribution">Payer's Contributions</label>
+                                <input type="number" class="form-control" id="editPayerContribution">
+                            </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="save-payer-edits" type="" class="btn btn-primary">Save Changes</button>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
+
+
+
     </div>
 
 
