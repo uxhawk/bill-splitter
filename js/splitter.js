@@ -33,7 +33,7 @@ function editValues(event) {
 
     //target the spans to edit card details
     document.getElementById(`header-${targetPayer}`).innerHTML = edit.name;
-    document.getElementById(`contribution-${targetPayer}`).innerHTML = edit.amountPaid;
+    document.getElementById(`contribution-${targetPayer}`).innerHTML = "$" + edit.amountPaid;
     $('#edit-contributor-modal').modal('toggle');
 }
 
