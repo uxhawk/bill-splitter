@@ -30,8 +30,9 @@ function editValues(event) {
     event.preventDefault();
     let edit = payerList.get(targetPayer);
     edit.name = document.getElementById("editPayerName").value;
-    edit.amountPaid = document.getElementById("editPayerContribution").value;
-    calcTotalCosts()
+    edit.amountPaid = parseInt(document.getElementById("editPayerContribution").value);
+    calcTotalCosts();
+
 
     //target the spans to edit card details
     document.getElementById(`header-${targetPayer}`).innerHTML = edit.name;
@@ -127,14 +128,14 @@ class BillPayer {
 function calcTotalCosts() {
     totalCosts = 0;
     for (let [key] of payerList.entries()) {
-
         let x = payerList.get(key);
         let curPaid = x.amountPaid;
         totalCosts += curPaid;
     }
-    console.log(totalCosts);
-    return totalCosts;
+
+    return parseInt(totalCosts);
 }
+
 
 
 
