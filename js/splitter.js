@@ -9,22 +9,39 @@ var payerList = new Map();
 var addPayerBtn = document.getElementById("add-payer-btn");
 var targetPayer = 0;
 var payerCards = document.getElementsByClassName("payer-cards");
+stringPayerList = "";
 
-// function loadStorage() {
-//     if (payerList.size === 0) {
-//         console.log("none");
-//     }
-//     //call function to display cards based off all the items in the local storage
-// }
+function loadStorage() {
+    //numPayers = JSON.parse(localStorage.getItem("numPayers"));
+    var pairArrayOfPayersFromStoreStr = localStorage.getItem("pairArrayOfPayers");
+    var pairArrayOfPayersFromStore = JSON.parse(pairArrayOfPayersFromStoreStr)
+    payerList = new Map(pairArrayOfPayersFromStore);
+    return payerList;
+}
 
-// loadStorage();
+loadStorage();
 
-// function displayStorage() {
+function displayStorage() {
+    if (payerList.size === 0) {
+        return
+    }
 
-// }
+    //show payer card
+    for (i = 1; i <= payerList.size; i++) {
+        calcTotalCosts();
+        showPayerCard();
+        numPayers++;
+    }
+}
+
+displayStorage();
 
 
-
+function setLocalStorage() {
+    var pairArrayOfPayers = [...payerList];
+    var pairArrayOfPayersStr = JSON.stringify(pairArrayOfPayers);
+    localStorage.setItem("pairArrayOfPayers", pairArrayOfPayersStr);
+}
 
 //event listeners
 addPayerBtn.addEventListener("click", addPayer);
@@ -72,28 +89,10 @@ function addPayer(event) {
 
         numPayers++;
         setLocalStorage();
+
     }
-
 }
 
-function setLocalStorage() {
-    // set new local storage
-    console.log(payerList);
-    numPlayerStorage = localStorage.setItem("numPayers", JSON.stringify(numPayers));
-    stringPayerList = JSON.stringify(Array.from(payerList.entries()));
-    localStorage.setItem("payerList", JSON.stringify(stringPayerList));
-
-    payerList = new Map(JSON.parse(stringPayerList));
-    numPayers = JSON.parse(localStorage.getItem("numPayers"));
-    console.log(payerList);
-
-
-
-
-    // var x = JSON.parse(localStorage.getItem("payerList"));
-
-    // console.log(x);
-}
 
 function clearInputs() {
     payerContributionEl.value = "";
@@ -114,13 +113,9 @@ function showPayerCard() {
         payerCards[payerCards.length - 1].insertAdjacentHTML("beforeend", cardBlock);
     }
 
-    // } else {
-    //     console.log("not a factor of three");
-    // }
-
     setCardDetails();
 
-    tagEditBtns()
+    tagEditBtns();
 }
 
 function setCardDetails() {
@@ -129,7 +124,7 @@ function setCardDetails() {
     let curCard = document.getElementById(`card-${numPayers}`);
     curCard.getElementsByClassName("card-header")[0].innerHTML = `<span id="header-${numPayers}">${curName}</span><button id="${numPayers}" type="button" class="btn btn-secondary modal-button" data-toggle="modal" data-target="#edit-contributor-modal">Edit</button>`;
     curCard.getElementsByClassName("card-title")[0].innerHTML = " Contributed:";
-    curCard.getElementsByClassName("card-text")[0].innerHTML = "$" + `<span id=>${payerContribution}</span>`;
+    curCard.getElementsByClassName("card-text")[0].innerHTML = "$" + `<span id="contribution-${numPayers}">${curPayer.amountPaid}</span>`;
 }
 
 function populateModal(event) {
@@ -169,6 +164,5 @@ function calcTotalCosts() {
         let curPaid = x.amountPaid;
         totalCosts += curPaid;
     }
-
     return parseInt(totalCosts);
 }
