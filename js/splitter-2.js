@@ -6,6 +6,7 @@ var savePayerBtn = document.getElementById("save-payer-btn");
 var payerCardsUL = document.getElementById("payer-cards-ul");
 var curBillSpanEl = document.getElementById("current-bill");
 var modalTrigger = "add";
+var dataIndex = 0;
 
 //Bills & Payer Details & Classes
 var totalBill = 0;
@@ -49,19 +50,20 @@ function init() {
 savePayerBtn.addEventListener("click", function(event) {
     event.preventDefault();
 
-    console.log(modalTrigger);
-    if (modalTrigger !== "edit") {
+    //console.log(modalTrigger, "here");
+    if (modalTrigger === "add") {
 
         payerArr.push(new Payer(payerNameInput.value, parseFloat(payerContribInput.value), 0));
         setStorage();
-        console.log(payerArr);
+        //console.log(payerArr);
         $('#contributor-modal').modal('hide');
         payerNameInput.value = "";
         payerContribInput.value = "";
         showCards();
+    } else {
+        editPayer();
     }
-    //display the card in the dom
-    //update local storage
+
 })
 
 //prevent default, push into payerArr
@@ -71,22 +73,40 @@ savePayerBtn.addEventListener("click", function(event) {
 
 //add event listener to the ul and target edit buttons and delete buttons
 
-payerCardsUL.addEventListener('click', function(event) {
-    event.preventDefault();
-    let functionAtt = event.target.getAttribute("function");
+payerCardsUL.addEventListener('click', function() {
+    $('#contributor-modal').modal('show');
+    var curCard = event.target.parentNode.getAttribute("data-index");
+    dataIndex = curCard;
+    console.log(curCard);
+    payerNameInput.value = payerArr[curCard].name;
+    payerContribInput.value = payerArr[curCard].amountPaid;
+    modalTrigger = event.target.getAttribute("function");
+    return curCard;
+});
+
+function editPayer() {
 
     //if function = edit, show modal
-    if (functionAtt === "edit") {
-        $('#contributor-modal').modal('show');
-        modalTrigger = functionAtt;
+    if (modalTrigger === "edit") {
+        console.log('hey');
+
+        //set the values of the modal to the data - attribute of card
+        payerArr[dataIndex].name = payerNameInput.value;
+        payerArr[dataIndex].amountPaid = payerContribInput.value;
+
+
+
+        $('#contributor-modal').modal('hide');
+        modalTrigger = "add";
+        setStorage();
+        showCards();
         return modalTrigger;
-    } else if (functionAtt === "delete") {
+    } else if (modalTrigger === "delete") {
 
     }
 
     // if function = delete, delete
-
-})
+}
 
 function showCards() {
 
@@ -95,14 +115,12 @@ function showCards() {
 
     //loop through the array of payers to display their cards
     for (let i = 0; i < payerArr.length; i++) {
-        var cardBlock = `<div id="card-${i}" class="payer-card "><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5></div><div function="delete" class="card-footer text-right"><button type="button" class="btn btn-danger">Delete</button></div></div></div>`;
+        var cardBlock = `<div id="card-${i}" class="payer-card"><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center" data-index="${i}"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5></div><div function="delete" class="card-footer text-right" data-index="${i}"><button type="button" class="btn btn-danger">Delete</button></div></div></div>`;
 
         var li = document.createElement("li");
         li.setAttribute("class", "list-inline-item col-md-4 col-sm-12 m-0");
         li.innerHTML = cardBlock;
 
-
-        console.log('hey');
         payerCardsUL.firstElementChild.appendChild(li);
 
         let nameOnCard = document.getElementById(`payer-name-${i}`);
@@ -110,8 +128,6 @@ function showCards() {
 
         let payerContrib = document.getElementById(`payer-contrib-${i}`);
         payerContrib.textContent = "$" + payerArr[i].amountPaid;
-
-
     }
 
 }
