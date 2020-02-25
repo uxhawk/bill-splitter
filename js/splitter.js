@@ -10,6 +10,21 @@ var addPayerBtn = document.getElementById("add-payer-btn");
 var targetPayer = 0;
 var payerCards = document.getElementsByClassName("payer-cards");
 
+// function loadStorage() {
+//     if (payerList.size === 0) {
+//         console.log("none");
+//     }
+//     //call function to display cards based off all the items in the local storage
+// }
+
+// loadStorage();
+
+// function displayStorage() {
+
+// }
+
+
+
 
 //event listeners
 addPayerBtn.addEventListener("click", addPayer);
@@ -38,6 +53,7 @@ function editValues(event) {
     document.getElementById(`header-${targetPayer}`).innerHTML = edit.name;
     document.getElementById(`contribution-${targetPayer}`).innerHTML = "$" + edit.amountPaid;
     $('#edit-contributor-modal').modal('toggle');
+    setLocalStorage();
 }
 
 function addPayer(event) {
@@ -51,11 +67,32 @@ function addPayer(event) {
         payerList.set(numPayers, payer);
 
         calcTotalCosts()
-        showPlayerCard();
+        showPayerCard();
         clearInputs();
 
         numPayers++;
+        setLocalStorage();
     }
+
+}
+
+function setLocalStorage() {
+    // set new local storage
+    console.log(payerList);
+    numPlayerStorage = localStorage.setItem("numPayers", JSON.stringify(numPayers));
+    stringPayerList = JSON.stringify(Array.from(payerList.entries()));
+    localStorage.setItem("payerList", JSON.stringify(stringPayerList));
+
+    payerList = new Map(JSON.parse(stringPayerList));
+    numPayers = JSON.parse(localStorage.getItem("numPayers"));
+    console.log(payerList);
+
+
+
+
+    // var x = JSON.parse(localStorage.getItem("payerList"));
+
+    // console.log(x);
 }
 
 function clearInputs() {
@@ -63,7 +100,7 @@ function clearInputs() {
     payerNameEl.value = "";
 }
 
-function showPlayerCard() {
+function showPayerCard() {
     var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header d-flex justify-content-between align-items-center">  </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div></div></div>`;
     // document.body.insertAdjacentHTML("beforeend", cardBlock);
 
@@ -135,12 +172,3 @@ function calcTotalCosts() {
 
     return parseInt(totalCosts);
 }
-
-
-
-
-
-
-
-
-//update the total expenditures if any value is edites
