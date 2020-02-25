@@ -93,13 +93,13 @@ function editPayer() {
         //set the values of the modal to the data - attribute of card
         payerArr[dataIndex].name = payerNameInput.value;
         payerArr[dataIndex].amountPaid = payerContribInput.value;
-
-
-
         $('#contributor-modal').modal('hide');
-        modalTrigger = "add";
+
         setStorage();
         showCards();
+        payerNameInput.value = "";
+        payerContribInput.value = "";
+        modalTrigger = "add";
         return modalTrigger;
     } else if (modalTrigger === "delete") {
 
