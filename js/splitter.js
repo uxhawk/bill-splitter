@@ -27,6 +27,7 @@ function displayStorage() {
     }
 
     //show payer card
+    //numPayers = 0;
     for (i = 1; i <= payerList.size; i++) {
         calcTotalCosts();
         showPayerCard();
@@ -100,7 +101,7 @@ function clearInputs() {
 }
 
 function showPayerCard() {
-    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header d-flex justify-content-between align-items-center">  </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div></div></div>`;
+    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header d-flex justify-content-between align-items-center"> </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div>  <div class="card-footer text-right"><button map-index="${numPayers}" type="button" class="btn btn-danger">Delete</button></div></div></div>`;
     // document.body.insertAdjacentHTML("beforeend", cardBlock);
 
     var row = `<div class="row payer-cards"> </div>`;
@@ -116,6 +117,7 @@ function showPayerCard() {
     setCardDetails();
 
     tagEditBtns();
+    tagDeleteBtns();
 }
 
 function setCardDetails() {
@@ -146,6 +148,30 @@ function tagEditBtns() {
         element.addEventListener('click', populateModal);
         //console.log(modalButtons);
     });
+}
+
+function tagDeleteBtns() {
+    //add event listeners to delete btns in cards
+    var deleteBtns = document.getElementsByClassName("btn-danger");
+    Array.from(deleteBtns).forEach(function(element) {
+        element.addEventListener('click', deletePayer);
+    });
+
+}
+
+function deletePayer(event) {
+    event.preventDefault();
+
+    payerList.delete(parseInt(event.target.getAttribute("map-index")));
+    console.log(payerList);
+    setLocalStorage();
+    loadStorage();
+    //console.log(payerList);
+    //calcTotalCosts();
+    displayStorage();
+    // numPayers = payerList.size;
+
+
 }
 
 class BillPayer {
