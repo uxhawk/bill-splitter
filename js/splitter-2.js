@@ -11,14 +11,11 @@ var dataIndex = 0;
 var totalBill = 0;
 var payerArr = [];
 class Payer {
-    constructor(name, amountPaid, amountOwed) {
+    constructor(name, amountPaid, netOwed) {
         this.name = name;
-        this.amountPaid = amountPaid;
-        this.amountOwed = amountOwed;
-    }
+        this.amountPaid = parseFloat(amountPaid);
+        this.netOwed = parseFloat(netOwed);
 
-    calcAmountOwed() {
-        //calculate how much this payer is owed & display in dom
     }
 }
 
@@ -50,12 +47,12 @@ function init() {
 savePayerBtn.addEventListener("click", function(event) {
     event.preventDefault();
 
-    //console.log(modalTrigger, "here");
+
     if (modalTrigger === "add") {
 
         payerArr.push(new Payer(payerNameInput.value, parseFloat(payerContribInput.value), 0));
         setStorage();
-        //console.log(payerArr);
+
         $('#contributor-modal').modal('hide');
         payerNameInput.value = "";
         payerContribInput.value = "";
@@ -76,7 +73,6 @@ savePayerBtn.addEventListener("click", function(event) {
 payerCardsUL.addEventListener('click', function() {
     var curCard = event.target.parentNode.getAttribute("data-index");
     modalTrigger = event.target.getAttribute("function");
-    console.log(modalTrigger);
     dataIndex = curCard;
 
     if (modalTrigger === "delete") {
@@ -89,7 +85,7 @@ payerCardsUL.addEventListener('click', function() {
     }
 
     $('#contributor-modal').modal('show');
-    //console.log(curCard);
+
     payerNameInput.value = payerArr[curCard].name;
     payerContribInput.value = payerArr[curCard].amountPaid;
 
@@ -103,7 +99,7 @@ function editPayer() {
 
         //set the values of the modal to the data - attribute of card
         payerArr[dataIndex].name = payerNameInput.value;
-        payerArr[dataIndex].amountPaid = payerContribInput.value;
+        payerArr[dataIndex].amountPaid = parseFloat(payerContribInput.value);
         $('#contributor-modal').modal('hide');
 
         setStorage();
@@ -122,7 +118,7 @@ function showCards() {
 
     //loop through the array of payers to display their cards
     for (let i = 0; i < payerArr.length; i++) {
-        var cardBlock = `<div id="card-${i}" class="payer-card"><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center" data-index="${i}"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5></div><div class="card-footer text-right" data-index="${i}"><button type="button" class="btn btn-danger" function="delete">Delete</button></div></div></div>`;
+        var cardBlock = `<div id="card-${i}" class="payer-card h-100"><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center" data-index="${i}"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5><ul class="list-unstyled"></ul></div><div class="card-footer text-right" data-index="${i}"><button type="button" class="btn btn-danger" function="delete">Delete</button></div></div></div>`;
 
         var li = document.createElement("li");
         li.setAttribute("class", "list-inline-item col-md-4 col-sm-12 m-0");
@@ -138,7 +134,7 @@ function showCards() {
 
     }
     calcTotalBill()
-
+    calcGroupOwed();
 }
 
 
@@ -146,9 +142,69 @@ function calcTotalBill() {
     //calculate the total cost from all of the payerArr expenses & display on DOM
     var totalBill = 0;
     for (let i = 0; i < payerArr.length; i++) {
-        totalBill += payerArr[i].amountPaid
+        totalBill += parseFloat(payerArr[i].amountPaid);
     }
     curBillSpanEl.innerText = parseFloat(totalBill);
+    calcNetOwed();
     return totalBill;
+}
 
+function calcNetOwed() {
+    for (let i = 0; i < payerArr.length; i++) {
+        payerArr[i].netOwed = (payerArr[i].amountPaid / payerArr.length);
+        parseFloat(payerArr[i].netOwed);
+    }
+}
+
+
+
+
+function calcGroupOwed() {
+    for (let i = 0; i < payerArr.length; i++) {
+        let x = payerArr[i];
+        x.groupOwed = [];
+        cardBody = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling;
+
+        for (let j = 0; j < payerArr.length; j++) {
+            let y = payerArr[j];
+            if (x === y) {
+                continue
+            } else {
+                if (x.netOwed >= y.netOwed) {
+                    continue
+                } else {
+                    var name = y.name;
+                    var owes = (parseFloat(y.netOwed).toFixed(2) - parseFloat(x.netOwed).toFixed(2));
+                    var text = `Owes ${name}: $${owes}`;
+                    console.log(name, owes);
+                    cardUL = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling.lastElementChild;
+
+                    var li = document.createElement("li");
+                    li.textContent = text;
+                    li.setAttribute("class", "")
+                    cardUL.appendChild(li);
+
+
+                    x.groupOwed.push({
+                        name: y.name,
+                        owes: (y.netOwed - x.netOwed)
+                    });
+
+                }
+            }
+        }
+    }
+    //console.log(payerArr);
+    //display in dom
+    // for (let i = 0; i < payerArr.length; i++) {
+    //     let x = payerArr[i];
+    //     cardBody = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling.lastElementChild;
+
+    //     for (let j = 0; j < x.groupOwed.length; j++) {
+    //         var ul = document.createAttribute("ul");
+    //         ul.innerHTML = `<li>Owed: ${x.groupOwed[j].name}: $${x.groupOwed[j].owes}</li>`;
+    //         cardBody.insertAdjacentHTML("afterend", ul);
+
+    //     }
+    // }
 }
