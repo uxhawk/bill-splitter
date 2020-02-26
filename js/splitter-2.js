@@ -1,7 +1,6 @@
 //DOM & Form Fields
 var payerNameInput = document.getElementById("payer-name-input");
 var payerContribInput = document.getElementById("payer-contribution-input");
-//var containerEl = document.getElementsByTagName("body")[0].firstElementChild;
 var savePayerBtn = document.getElementById("save-payer-btn");
 var payerCardsUL = document.getElementById("payer-cards-ul");
 var curBillSpanEl = document.getElementById("current-bill");
@@ -38,6 +37,7 @@ function init() {
     // If todos were retrieved from localStorage, update the todos array to it
     if (storedPayerList !== null) {
         payerArr = storedPayerList;
+        calcTotalBill()
     }
 
     // Render todos to the DOM
@@ -112,15 +112,7 @@ function editPayer() {
         payerContribInput.value = "";
         modalTrigger = "add";
         return modalTrigger;
-    } else if (modalTrigger === "delete") {
-        // payerArr.splice(dataIndex, 1);
-        // setStorage();
-        // showCards();
-        // modalTrigger = "add";
-        // return modalTrigger;
     }
-
-    // if function = delete, delete
 }
 
 function showCards() {
@@ -143,35 +135,20 @@ function showCards() {
 
         let payerContrib = document.getElementById(`payer-contrib-${i}`);
         payerContrib.textContent = "$" + payerArr[i].amountPaid;
+
     }
+    calcTotalBill()
 
 }
 
-function populateModal() {
-    //if data target is edit btn, populate with array values
-    //-if editng, update array values upon completion
-    //-if editing, update total cost and amount each person is owed upon completion
-    //update local storage
-
-    //if data target is add payer, load empty values
-
-}
-
-// function savePayerDetails(event) {
-//     event.preventDefault();
-//     let functionAtt = event.target.getAttribute("function");
-//     console.log(functionAtt);
-//     if (functionAtt === "add") {
-
-//         payerArr.push(new Payer(payerNameInput.value, payerContribInput.value, 0));
-//         setStorage();
-//         console.log(payerArr);
-//         $('#contributor-modal').modal('hide');
-//     }
-//     //display the card in the dom
-//     //update local storage
-// }
 
 function calcTotalBill() {
     //calculate the total cost from all of the payerArr expenses & display on DOM
+    var totalBill = 0;
+    for (let i = 0; i < payerArr.length; i++) {
+        totalBill += payerArr[i].amountPaid
+    }
+    curBillSpanEl.innerText = parseFloat(totalBill);
+    return totalBill;
+
 }
