@@ -15,7 +15,6 @@ class Payer {
         this.name = name;
         this.amountPaid = parseFloat(amountPaid);
         this.netOwed = parseFloat(netOwed);
-
     }
 }
 
@@ -23,7 +22,6 @@ init();
 
 function setStorage() {
     localStorage.setItem("payerArr", JSON.stringify(payerArr));
-
 }
 
 function init() {
@@ -41,21 +39,31 @@ function init() {
     showCards();
 }
 
+//clear inputs 
+function clearInputs() {
+    payerNameInput.value = "";
+    payerContribInput.value = "";
+}
+
+//add event listener to cancel buttons in modal
+document.getElementById("contributor-modal").addEventListener("click", function(event) {
+    modalTrigger = "add";
+    clearInputs();
+
+})
 
 
 //add event listener to form submit
 savePayerBtn.addEventListener("click", function(event) {
     event.preventDefault();
 
-
     if (modalTrigger === "add") {
-
         payerArr.push(new Payer(payerNameInput.value, parseFloat(payerContribInput.value), 0));
         setStorage();
 
         $('#contributor-modal').modal('hide');
-        payerNameInput.value = "";
-        payerContribInput.value = "";
+        clearInputs();
+
         showCards();
     } else {
         editPayer();
@@ -76,14 +84,11 @@ payerCardsUL.addEventListener('click', function() {
         showCards();
         modalTrigger = "add";
         return modalTrigger;
-
     }
 
     $('#contributor-modal').modal('show');
-
     payerNameInput.value = payerArr[curCard].name;
     payerContribInput.value = payerArr[curCard].amountPaid;
-
     return curCard;
 });
 
@@ -99,8 +104,7 @@ function editPayer() {
 
         setStorage();
         showCards();
-        payerNameInput.value = "";
-        payerContribInput.value = "";
+        clearInputs();
         modalTrigger = "add";
         return modalTrigger;
     }
@@ -118,7 +122,6 @@ function showCards() {
         var li = document.createElement("li");
         li.setAttribute("class", "list-inline-item col-md-4 col-sm-12 m-0");
         li.innerHTML = cardBlock;
-
         payerCardsUL.firstElementChild.appendChild(li);
 
         let nameOnCard = document.getElementById(`payer-name-${i}`);
