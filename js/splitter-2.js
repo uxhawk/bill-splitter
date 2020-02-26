@@ -74,13 +74,25 @@ savePayerBtn.addEventListener("click", function(event) {
 //add event listener to the ul and target edit buttons and delete buttons
 
 payerCardsUL.addEventListener('click', function() {
-    $('#contributor-modal').modal('show');
     var curCard = event.target.parentNode.getAttribute("data-index");
+    modalTrigger = event.target.getAttribute("function");
+    console.log(modalTrigger);
     dataIndex = curCard;
-    console.log(curCard);
+
+    if (modalTrigger === "delete") {
+        payerArr.splice(dataIndex, 1);
+        setStorage();
+        showCards();
+        modalTrigger = "add";
+        return modalTrigger;
+
+    }
+
+    $('#contributor-modal').modal('show');
+    //console.log(curCard);
     payerNameInput.value = payerArr[curCard].name;
     payerContribInput.value = payerArr[curCard].amountPaid;
-    modalTrigger = event.target.getAttribute("function");
+
     return curCard;
 });
 
@@ -88,7 +100,6 @@ function editPayer() {
 
     //if function = edit, show modal
     if (modalTrigger === "edit") {
-        console.log('hey');
 
         //set the values of the modal to the data - attribute of card
         payerArr[dataIndex].name = payerNameInput.value;
@@ -102,7 +113,11 @@ function editPayer() {
         modalTrigger = "add";
         return modalTrigger;
     } else if (modalTrigger === "delete") {
-
+        // payerArr.splice(dataIndex, 1);
+        // setStorage();
+        // showCards();
+        // modalTrigger = "add";
+        // return modalTrigger;
     }
 
     // if function = delete, delete
@@ -115,7 +130,7 @@ function showCards() {
 
     //loop through the array of payers to display their cards
     for (let i = 0; i < payerArr.length; i++) {
-        var cardBlock = `<div id="card-${i}" class="payer-card"><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center" data-index="${i}"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5></div><div function="delete" class="card-footer text-right" data-index="${i}"><button type="button" class="btn btn-danger">Delete</button></div></div></div>`;
+        var cardBlock = `<div id="card-${i}" class="payer-card"><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center" data-index="${i}"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5></div><div class="card-footer text-right" data-index="${i}"><button type="button" class="btn btn-danger" function="delete">Delete</button></div></div></div>`;
 
         var li = document.createElement("li");
         li.setAttribute("class", "list-inline-item col-md-4 col-sm-12 m-0");
