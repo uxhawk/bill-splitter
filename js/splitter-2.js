@@ -175,7 +175,7 @@ function calcGroupOwed() {
                 } else {
                     var name = y.name;
                     var owes = (parseFloat(y.netOwed).toFixed(2) - parseFloat(x.netOwed).toFixed(2));
-                    var text = `Owes ${name}: $${owes}`;
+                    var text = `Owes ${name}: $${owes.toFixed(2)}`;
                     console.log(name, owes);
                     cardUL = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling.lastElementChild;
 
