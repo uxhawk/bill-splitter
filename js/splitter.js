@@ -151,9 +151,6 @@ function calcNetOwed() {
     }
 }
 
-
-
-
 function calcGroupOwed() {
     for (let i = 0; i < payerArr.length; i++) {
         let x = payerArr[i];
@@ -184,7 +181,6 @@ function calcGroupOwed() {
                         name: y.name,
                         owes: (y.netOwed - x.netOwed)
                     });
-
                 }
             }
         }
