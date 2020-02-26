@@ -24,6 +24,12 @@ function setStorage() {
     localStorage.setItem("payerArr", JSON.stringify(payerArr));
 }
 
+$(document).ready(function() {
+    $('#contributor-modal').on('hidden.bs.modal', function() {
+        $(this).find('form').trigger('reset');
+    });
+});
+
 function init() {
     // Get stored payerList from localStorage
     // Parsing the JSON string to an object
@@ -45,17 +51,10 @@ function clearInputs() {
     payerContribInput.value = "";
 }
 
-//add event listener to cancel buttons in modal
-document.getElementById("contributor-modal").addEventListener("click", function(event) {
-    modalTrigger = "add";
-    clearInputs();
-
-})
-
-
 //add event listener to form submit
 savePayerBtn.addEventListener("click", function(event) {
     event.preventDefault();
+
 
     if (modalTrigger === "add") {
         payerArr.push(new Payer(payerNameInput.value, parseFloat(payerContribInput.value), 0));
