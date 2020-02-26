@@ -26,7 +26,7 @@ function setStorage() {
 
 $(document).ready(function() {
     $('#contributor-modal').on('hidden.bs.modal', function() {
-        $(this).find('form').trigger('reset');
+        clearInputs();
     });
 });
 
@@ -71,8 +71,12 @@ savePayerBtn.addEventListener("click", function(event) {
 })
 
 //add event listener to the ul and target edit buttons and delete buttons
-
 payerCardsUL.addEventListener('click', function() {
+    var clickTarget = event.target.getAttribute("function");
+    if (clickTarget === null) {
+        $('#contributor-modal').modal('hide');
+        return;
+    }
     var curCard = event.target.parentNode.getAttribute("data-index");
     modalTrigger = event.target.getAttribute("function");
     dataIndex = curCard;
