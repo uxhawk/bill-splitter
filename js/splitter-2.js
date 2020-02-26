@@ -63,11 +63,6 @@ savePayerBtn.addEventListener("click", function(event) {
 
 })
 
-//prevent default, push into payerArr
-//if editing, target the index of the payer details (payerArr[i] = new modal values)
-//main function call to set storage, showCards,create payer, calculate total cost, calculate total amount owed
-
-
 //add event listener to the ul and target edit buttons and delete buttons
 
 payerCardsUL.addEventListener('click', function() {
@@ -176,7 +171,7 @@ function calcGroupOwed() {
                     var name = y.name;
                     var owes = (parseFloat(y.netOwed).toFixed(2) - parseFloat(x.netOwed).toFixed(2));
                     var text = `Owes ${name}: $${owes.toFixed(2)}`;
-                    console.log(name, owes);
+
                     cardUL = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling.lastElementChild;
 
                     var li = document.createElement("li");
@@ -194,17 +189,4 @@ function calcGroupOwed() {
             }
         }
     }
-    //console.log(payerArr);
-    //display in dom
-    // for (let i = 0; i < payerArr.length; i++) {
-    //     let x = payerArr[i];
-    //     cardBody = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling.lastElementChild;
-
-    //     for (let j = 0; j < x.groupOwed.length; j++) {
-    //         var ul = document.createAttribute("ul");
-    //         ul.innerHTML = `<li>Owed: ${x.groupOwed[j].name}: $${x.groupOwed[j].owes}</li>`;
-    //         cardBody.insertAdjacentHTML("afterend", ul);
-
-    //     }
-    // }
 }
