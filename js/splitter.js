@@ -1,194 +1,192 @@
-var payerNameEl = document.getElementById("payerName");
-var payerContributionEl = document.getElementById("payerContribution");
-var bodyEl = document.getElementsByTagName("body")[0];
-var containerEl = bodyEl.firstElementChild;
-var payerName, payerContribution;
-var totalCosts = 0;
-var numPayers = 0;
-var payerList = new Map();
-var addPayerBtn = document.getElementById("add-payer-btn");
-var targetPayer = 0;
-var payerCards = document.getElementsByClassName("payer-cards");
-stringPayerList = "";
+//DOM & Form Fields
+var payerNameInput = document.getElementById("payer-name-input");
+var payerContribInput = document.getElementById("payer-contribution-input");
+var savePayerBtn = document.getElementById("save-payer-btn");
+var payerCardsUL = document.getElementById("payer-cards-ul");
+var curBillSpanEl = document.getElementById("current-bill");
+var modalTrigger = "add";
+var dataIndex = 0;
 
-function loadStorage() {
-    //numPayers = JSON.parse(localStorage.getItem("numPayers"));
-    var pairArrayOfPayersFromStoreStr = localStorage.getItem("pairArrayOfPayers");
-    var pairArrayOfPayersFromStore = JSON.parse(pairArrayOfPayersFromStoreStr)
-    payerList = new Map(pairArrayOfPayersFromStore);
-    return payerList;
-}
+//Bills & Payer Details & Classes
+var totalBill = 0;
+var payerArr = [];
+class Payer {
+    constructor(name, amountPaid, netOwed) {
+        this.name = name;
+        this.amountPaid = parseFloat(amountPaid);
+        this.netOwed = parseFloat(netOwed);
 
-loadStorage();
-
-function displayStorage() {
-    if (payerList.size === 0) {
-        return
-    }
-
-    //show payer card
-    //numPayers = 0;
-    for (i = 1; i <= payerList.size; i++) {
-        calcTotalCosts();
-        showPayerCard();
-        numPayers++;
     }
 }
 
-displayStorage();
+init();
 
+function setStorage() {
+    localStorage.setItem("payerArr", JSON.stringify(payerArr));
 
-function setLocalStorage() {
-    var pairArrayOfPayers = [...payerList];
-    var pairArrayOfPayersStr = JSON.stringify(pairArrayOfPayers);
-    localStorage.setItem("pairArrayOfPayers", pairArrayOfPayersStr);
 }
 
-//event listeners
-addPayerBtn.addEventListener("click", addPayer);
-document.getElementById("save-payer-edits").addEventListener("click", editValues);
+function init() {
+    // Get stored payerList from localStorage
+    // Parsing the JSON string to an object
+    var storedPayerList = JSON.parse(localStorage.getItem("payerArr"));
 
-//add event listeners to all input fields
-let inputFields = document.getElementsByClassName("form-control");
-Array.from(inputFields).forEach(function(element) {
-    element.addEventListener('input', setValues);
+    // If todos were retrieved from localStorage, update the todos array to it
+    if (storedPayerList !== null) {
+        payerArr = storedPayerList;
+        calcTotalBill()
+    }
+
+    // Render todos to the DOM
+    showCards();
+}
+
+
+
+//add event listener to form submit
+savePayerBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+
+
+    if (modalTrigger === "add") {
+
+        payerArr.push(new Payer(payerNameInput.value, parseFloat(payerContribInput.value), 0));
+        setStorage();
+
+        $('#contributor-modal').modal('hide');
+        payerNameInput.value = "";
+        payerContribInput.value = "";
+        showCards();
+    } else {
+        editPayer();
+    }
+
+})
+
+//add event listener to the ul and target edit buttons and delete buttons
+
+payerCardsUL.addEventListener('click', function() {
+    var curCard = event.target.parentNode.getAttribute("data-index");
+    modalTrigger = event.target.getAttribute("function");
+    dataIndex = curCard;
+
+    if (modalTrigger === "delete") {
+        payerArr.splice(dataIndex, 1);
+        setStorage();
+        showCards();
+        modalTrigger = "add";
+        return modalTrigger;
+
+    }
+
+    $('#contributor-modal').modal('show');
+
+    payerNameInput.value = payerArr[curCard].name;
+    payerContribInput.value = payerArr[curCard].amountPaid;
+
+    return curCard;
 });
 
+function editPayer() {
 
-function setValues(element) {
-    element.target.id === "payerName" ? payerName = payerNameEl.value : payerContribution = parseInt(payerContributionEl.value);
+    //if function = edit, show modal
+    if (modalTrigger === "edit") {
+
+        //set the values of the modal to the data - attribute of card
+        payerArr[dataIndex].name = payerNameInput.value;
+        payerArr[dataIndex].amountPaid = parseFloat(payerContribInput.value);
+        $('#contributor-modal').modal('hide');
+
+        setStorage();
+        showCards();
+        payerNameInput.value = "";
+        payerContribInput.value = "";
+        modalTrigger = "add";
+        return modalTrigger;
+    }
 }
 
-function editValues(event) {
-    event.preventDefault();
-    let edit = payerList.get(targetPayer);
-    edit.name = document.getElementById("editPayerName").value;
-    edit.amountPaid = parseInt(document.getElementById("editPayerContribution").value);
-    calcTotalCosts();
+function showCards() {
 
+    //clear the display of all cards
+    payerCardsUL.innerHTML = `<div class="row"></div>`;
 
-    //target the spans to edit card details
-    document.getElementById(`header-${targetPayer}`).innerHTML = edit.name;
-    document.getElementById(`contribution-${targetPayer}`).innerHTML = "$" + edit.amountPaid;
-    $('#edit-contributor-modal').modal('toggle');
-    setLocalStorage();
+    //loop through the array of payers to display their cards
+    for (let i = 0; i < payerArr.length; i++) {
+        var cardBlock = `<div id="card-${i}" class="payer-card h-100"><div class="card bg-light mb-3"><div class="card-header d-flex justify-content-between align-items-center" data-index="${i}"><span id="payer-name-${i}"></span> <button class="btn btn-secondary" function="edit">Edit</button></div><div class="card-body"><p class="card-title">Contribution:</p><h5 class="card-text"><span id="payer-contrib-${i}"></span></h5><ul class="list-unstyled"></ul></div><div class="card-footer text-right" data-index="${i}"><button type="button" class="btn btn-danger" function="delete">Delete</button></div></div></div>`;
+
+        var li = document.createElement("li");
+        li.setAttribute("class", "list-inline-item col-md-4 col-sm-12 m-0");
+        li.innerHTML = cardBlock;
+
+        payerCardsUL.firstElementChild.appendChild(li);
+
+        let nameOnCard = document.getElementById(`payer-name-${i}`);
+        nameOnCard.textContent = payerArr[i].name;
+
+        let payerContrib = document.getElementById(`payer-contrib-${i}`);
+        payerContrib.textContent = "$" + payerArr[i].amountPaid;
+
+    }
+    calcTotalBill()
+    calcGroupOwed();
 }
 
-function addPayer(event) {
-    event.preventDefault();
-    if (payerNameEl.value === "") {
-        alert("Please enter a name.");
-    } else if (payerContributionEl.value === "") {
-        alert("Please enter the amount this person spent.");
-    } else {
-        let payer = new BillPayer(payerName, payerContribution, 0);
-        payerList.set(numPayers, payer);
 
-        calcTotalCosts()
-        showPayerCard();
-        clearInputs();
+function calcTotalBill() {
+    //calculate the total cost from all of the payerArr expenses & display on DOM
+    var totalBill = 0;
+    for (let i = 0; i < payerArr.length; i++) {
+        totalBill += parseFloat(payerArr[i].amountPaid);
+    }
+    curBillSpanEl.innerText = parseFloat(totalBill);
+    calcNetOwed();
+    return totalBill;
+}
 
-        numPayers++;
-        setLocalStorage();
-
+function calcNetOwed() {
+    for (let i = 0; i < payerArr.length; i++) {
+        payerArr[i].netOwed = (payerArr[i].amountPaid / payerArr.length);
+        parseFloat(payerArr[i].netOwed);
     }
 }
 
 
-function clearInputs() {
-    payerContributionEl.value = "";
-    payerNameEl.value = "";
-}
 
-function showPayerCard() {
-    var cardBlock = `<div id="card-${numPayers}" class="mt-5 col-md-4 payer-card"><div class="card bg-light mb-3"> <div class="card-header d-flex justify-content-between align-items-center"> </div> <div class="card-body"> <p class="card-title"></p><h5 id="contribution-${numPayers}" class="card-text"></h5></div>  <div class="card-footer text-right"><button map-index="${numPayers}" type="button" class="btn btn-danger">Delete</button></div></div></div>`;
-    // document.body.insertAdjacentHTML("beforeend", cardBlock);
 
-    var row = `<div class="row payer-cards"> </div>`;
-    if (numPayers === 0) {
-        payerCards[0].insertAdjacentHTML("beforeend", cardBlock);
-    } else if (numPayers % 3 === 0) {
-        payerCards[payerCards.length - 1].insertAdjacentHTML("afterend", row);
-        payerCards[payerCards.length - 1].insertAdjacentHTML("beforeend", cardBlock);
-    } else {
-        payerCards[payerCards.length - 1].insertAdjacentHTML("beforeend", cardBlock);
+function calcGroupOwed() {
+    for (let i = 0; i < payerArr.length; i++) {
+        let x = payerArr[i];
+        x.groupOwed = [];
+        cardBody = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling;
+
+        for (let j = 0; j < payerArr.length; j++) {
+            let y = payerArr[j];
+            if (x === y) {
+                continue
+            } else {
+                if (x.netOwed >= y.netOwed) {
+                    continue
+                } else {
+                    var name = y.name;
+                    var owes = (parseFloat(y.netOwed).toFixed(2) - parseFloat(x.netOwed).toFixed(2));
+                    var text = `Owes ${name}: $${owes.toFixed(2)}`;
+
+                    cardUL = document.getElementById(`card-${i}`).firstElementChild.firstElementChild.nextElementSibling.lastElementChild;
+
+                    var li = document.createElement("li");
+                    li.textContent = text;
+                    li.setAttribute("class", "")
+                    cardUL.appendChild(li);
+
+
+                    x.groupOwed.push({
+                        name: y.name,
+                        owes: (y.netOwed - x.netOwed)
+                    });
+
+                }
+            }
+        }
     }
-
-    setCardDetails();
-
-    tagEditBtns();
-    tagDeleteBtns();
-}
-
-function setCardDetails() {
-    let curPayer = payerList.get(numPayers);
-    let curName = curPayer.name;
-    let curCard = document.getElementById(`card-${numPayers}`);
-    curCard.getElementsByClassName("card-header")[0].innerHTML = `<span id="header-${numPayers}">${curName}</span><button id="${numPayers}" type="button" class="btn btn-secondary modal-button" data-toggle="modal" data-target="#edit-contributor-modal">Edit</button>`;
-    curCard.getElementsByClassName("card-title")[0].innerHTML = " Contributed:";
-    curCard.getElementsByClassName("card-text")[0].innerHTML = "$" + `<span id="contribution-${numPayers}">${curPayer.amountPaid}</span>`;
-}
-
-function populateModal(event) {
-    let curPayer = payerList.get(parseInt(event.target.id));
-    let curName = curPayer.name;
-    let curContribution = curPayer.amountPaid;
-    let modalName = document.getElementById("editPayerName");
-    let modalContribution = document.getElementById("editPayerContribution");
-    modalName.value = curName;
-    modalContribution.value = curContribution;
-
-    return targetPayer = parseInt(event.target.id);
-}
-
-function tagEditBtns() {
-    //add event listeners to edit btns in cards
-    var modalButtons = document.getElementsByClassName("modal-button");
-    Array.from(modalButtons).forEach(function(element) {
-        element.addEventListener('click', populateModal);
-        //console.log(modalButtons);
-    });
-}
-
-function tagDeleteBtns() {
-    //add event listeners to delete btns in cards
-    var deleteBtns = document.getElementsByClassName("btn-danger");
-    Array.from(deleteBtns).forEach(function(element) {
-        element.addEventListener('click', deletePayer);
-    });
-
-}
-
-function deletePayer(event) {
-    event.preventDefault();
-
-    payerList.delete(parseInt(event.target.getAttribute("map-index")));
-    console.log(payerList);
-    setLocalStorage();
-    loadStorage();
-    //console.log(payerList);
-    //calcTotalCosts();
-    displayStorage();
-    // numPayers = payerList.size;
-
-
-}
-
-class BillPayer {
-    constructor(name, amountPaid, amountOwed) {
-        this.name = name;
-        this.amountPaid = amountPaid;
-        this.amountOwed = amountOwed;
-    }
-}
-
-//function to calculate the total expenditures
-function calcTotalCosts() {
-    totalCosts = 0;
-    for (let [key] of payerList.entries()) {
-        let x = payerList.get(key);
-        let curPaid = x.amountPaid;
-        totalCosts += curPaid;
-    }
-    return parseInt(totalCosts);
 }
