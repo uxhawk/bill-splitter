@@ -38,7 +38,7 @@ function init() {
     // If todos were retrieved from localStorage, update the todos array to it
     if (storedPayerList !== null) {
         payerArr = storedPayerList;
-        calcTotalBill()
+        calcTotalBill();
     }
 
     // Render todos to the DOM
